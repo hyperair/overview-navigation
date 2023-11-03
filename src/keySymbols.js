@@ -1,4 +1,4 @@
-import Clutter from 'gi:///Clutter';
+import Clutter from 'gi://Clutter';
 
 export var LOWER_CASE_KEY_SYMBOLS = {
   [Clutter.KEY_a]: 'a',
