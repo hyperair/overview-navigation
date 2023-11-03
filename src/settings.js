@@ -1,6 +1,6 @@
-const Extension = require('Extension')
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-var PROPERTIES = {
+export var PROPERTIES = {
   SHOW_OVERVIEW_WHEN_CHANGE_WORKSPACE_KEY: 'show-overview-when-change-workspace',
   SHOW_WINDOW_SELECTOR_WHEN_SHOW_OVERVIEW: 'show-window-selector-when-show-overview',
   LOGGING: 'logging',
@@ -11,7 +11,7 @@ var PROPERTIES = {
   HINT_BORDER_SIZE: 'border-size'
 }
 
-var Settings = class Settings {
+export var Settings = class Settings {
   constructor (gioSettings, gioFlag) {
     this.gioFlag = gioFlag
     this.gioSettings = gioSettings
@@ -108,5 +108,3 @@ if (!global.overviewNavigationTesting) {
     return new Settings(gioSettingsLoader.load(), Gio.SettingsBindFlags.DEFAULT)
   }
 }
-
-module.exports = { Settings, PROPERTIES }

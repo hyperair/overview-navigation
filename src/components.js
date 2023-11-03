@@ -1,4 +1,4 @@
-const { St } = require('gi')
+import St from 'gi://St'
 
 var FOCUS_WINDOW_STYLE = 'extension-overview-navigation-window-tooltip'
 
@@ -48,6 +48,6 @@ var Label = class Label {
   }
 }
 
-module.exports = {
+export default {
   Label
 }

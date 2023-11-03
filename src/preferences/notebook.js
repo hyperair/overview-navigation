@@ -1,22 +1,22 @@
-const Gtk = require('gi/Gtk')
-const { Widget } = require('./widget')
+import { Box, Orientation, Label } from 'gi://Gtk'
+import { Widget } from './widget.js'
 
-var NotebookPage = class NotebookPage extends Widget {
+export var NotebookPage = class NotebookPage extends Widget {
   constructor (name) {
     super(
-      new Gtk.Box({
+      new Box({
         'margin-top': 10,
         spacing: 5
       })
     )
     this.name = name
-    this.parent.set_orientation(Gtk.Orientation.VERTICAL)
+    this.parent.set_orientation(Orientation.VERTICAL)
   }
 
   register (notebook) {
-    const label = new Gtk.Label({ label: this.name })
+    const label = new Label({ label: this.name })
     notebook.append_page(this.parent, label)
   }
 }
 
-module.exports = { NotebookPage }
+export default { NotebookPage }

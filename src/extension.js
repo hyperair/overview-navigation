@@ -1,5 +1,5 @@
-const { Main } = require('./app')
-const { Logger } = require('./utils')
+import { Main } from './app.js'
+import { Logger } from './utils.js'
 
 let main, logger
 /*eslint-disable */

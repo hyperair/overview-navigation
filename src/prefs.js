@@ -1,19 +1,14 @@
-const Gtk = require('gi/Gtk')
-const {
-  Widget,
-  ToggleButtonWidget,
-  ColorChooserWidget,
-  NumberInputWidget
-} = require('./preferences/widget')
-const { NotebookPage } = require('./preferences/notebook')
+import { Box, Orientation, Notebook, Label, Align } from 'gi://Gtk'
+import { Widget, ToggleButtonWidget, ColorChooserWidget, NumberInputWidget } from './preferences/widget.js'
+import { NotebookPage } from './preferences/notebook.js'
 
 global = {}
 
 class SettingsUI extends Widget {
   constructor (logger, settings, properties) {
-    super(new Gtk.Box({}))
-    this.parent.set_orientation(Gtk.Orientation.VERTICAL)
-    this.notebook = new Gtk.Notebook()
+    super(new Box({}))
+    this.parent.set_orientation(Orientation.VERTICAL)
+    this.notebook = new Notebook()
     this.notebook.set_show_border(true)
     this.parent.append(this.notebook, true, true, 0)
 
@@ -100,13 +95,13 @@ class SettingsUI extends Widget {
 class HelpWidget extends Widget {
   constructor (name, settings) {
     super(
-      new Gtk.Box({
+      new Box({
         spacing: 10
       })
     )
     this.parent.set_margin_start(10)
     this.parent.set_margin_end(10)
-    this.parent.set_orientation(Gtk.Orientation.VERTICAL)
+    this.parent.set_orientation(Orientation.VERTICAL)
     this.name = 'Help'
 
     const activationTitle = this.createTitle(`Activation`)
@@ -135,17 +130,17 @@ class HelpWidget extends Widget {
     this.parent.append(closeDescription)
   }
   createTitle (text) {
-    const label = new Gtk.Label({
-      halign: Gtk.Align.START
+    const label = new Label({
+      halign: Align.START
     })
     label.set_markup(`<b>${text}</b>`)
     return label
   }
 
   createTextDescription (text) {
-    const label = new Gtk.Label({
+    const label = new Label({
       label: text,
-      halign: Gtk.Align.START
+      halign: Align.START
     })
     label.set_wrap(true)
     return label
@@ -160,11 +155,12 @@ function init() {
 
 /*eslint-disable */
 // Required by Gnome Shell
+import { initialize, PROPERTIES } from './settings.js'
+import { PrefLogger } from './utils.js'
+
 function buildPrefsWidget() {
-  const { initialize, PROPERTIES } = require('./settings')
   const settings = initialize()
 
-  const { PrefLogger } = require('./utils')
   const logger = new PrefLogger('SettingsWidget', settings)
   const ui = new SettingsUI(logger, settings, PROPERTIES)
 

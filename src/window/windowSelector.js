@@ -1,6 +1,6 @@
-const { MODE } = require('../mode')
+import { MODE }  from '../mode.js'
 
-var WindowSelector = class WindowSelector {
+export var WindowSelector = class WindowSelector {
   constructor (keySymbols, tagGenerator, logger, overview, selectedWindowFactory) {
     this.keySymbols = keySymbols
     this.tagGenerator = tagGenerator
@@ -100,5 +100,3 @@ if (!global.overviewNavigationTesting) {
     return new WindowSelector(keySymbols, tagGenerator, logger, overview, new Factory())
   }
 }
-
-module.exports = { WindowSelector }

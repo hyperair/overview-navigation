@@ -1,4 +1,4 @@
-const Clutter = require('gi/Clutter')
+import Clutter from 'gi://Clutter';
 
 var LOWER_CASE_KEY_SYMBOLS = {
   [Clutter.KEY_a]: 'a',
