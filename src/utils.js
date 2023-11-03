@@ -1,4 +1,4 @@
-var Logger = class Logger {
+export var Logger = class Logger {
   constructor (name, settings) {
     this.settings = settings
     this.name = name
@@ -37,7 +37,7 @@ var Logger = class Logger {
 }
 
 /*eslint-disable */
-var PrefLogger = class PrefLogger extends Logger {
+export var PrefLogger = class PrefLogger extends Logger {
   /* eslint-enable */
   constructor (name, settings) {
     super(name, settings)
@@ -46,8 +46,10 @@ var PrefLogger = class PrefLogger extends Logger {
   }
 }
 
+export var TestLogger = undefined;
+
 if (global.overviewNavigationTesting) {
-  var TestLogger = class TestLogger extends Logger {
+  TestLogger = class TestLogger extends Logger {
     constructor (name, logging) {
       super(name, {
         isLogging: () => logging
@@ -56,6 +58,4 @@ if (global.overviewNavigationTesting) {
       this._outError = console.log
     }
   }
-
-  module.exports = { TestLogger }
 }

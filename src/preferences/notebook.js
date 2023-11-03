@@ -18,5 +18,3 @@ export var NotebookPage = class NotebookPage extends Widget {
     notebook.append_page(this.parent, label)
   }
 }
-
-export default { NotebookPage }
