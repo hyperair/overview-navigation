@@ -3,8 +3,8 @@ export var Logger = class Logger {
     this.settings = settings
     this.name = name
     this.extensionName = 'Overview Navigation'
-    this._out = global.log
-    this._outError = global.logError
+    this._out = console.log
+    this._outError = console.error
   }
 
   info (message) {
