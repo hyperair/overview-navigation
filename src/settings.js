@@ -71,40 +71,38 @@ export var Settings = class Settings {
   }
 }
 
-if (!global.overviewNavigationTesting) {
-  const Gio = require('gi/Gio')
-  const GioSS = Gio.SettingsSchemaSource
+import Gio from 'gi://Gio'
+const GioSS = Gio.SettingsSchemaSource
 
-  class GioSettingsLoader {
-    constructor () {
-      this.schema = Extension.metadata['settings-schema']
-      this.schemaDir = Extension.dir.get_child('schemas')
+class GioSettingsLoader {
+    constructor() {
+        this.schema = Extension.metadata['settings-schema']
+        this.schemaDir = Extension.dir.get_child('schemas')
     }
 
-    load () {
-      const schemaSource = this._createSchemaSource()
-      const schemaObj = schemaSource.lookup(this.schema, true)
+    load() {
+        const schemaSource = this._createSchemaSource()
+        const schemaObj = schemaSource.lookup(this.schema, true)
 
-      if (!schemaObj) {
-        throw new Error(`Schema ${this.schema} could not be found for extension ${Extension.metadata.uuid}`)
-      }
+        if (!schemaObj) {
+            throw new Error(`Schema ${this.schema} could not be found for extension ${Extension.metadata.uuid}`)
+        }
 
-      return new Gio.Settings({ settings_schema: schemaObj })
+        return new Gio.Settings({ settings_schema: schemaObj })
     }
 
-    _createSchemaSource () {
-      if (!this.schemaDir.query_exists(null)) {
-        return GioSS.get_default()
-      }
+    _createSchemaSource() {
+        if (!this.schemaDir.query_exists(null)) {
+            return GioSS.get_default()
+        }
 
-      return GioSS.new_from_directory(this.schemaDir.get_path(), GioSS.get_default(), false)
+        return GioSS.new_from_directory(this.schemaDir.get_path(), GioSS.get_default(), false)
     }
-  }
+}
 
-  /*eslint-disable */
-  function initialize() {
+/*eslint-disable */
+export function initialize() {
     /* eslint-enable */
     const gioSettingsLoader = new GioSettingsLoader()
     return new Settings(gioSettingsLoader.load(), Gio.SettingsBindFlags.DEFAULT)
-  }
 }
