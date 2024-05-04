@@ -7,13 +7,11 @@ import { initializeWindowManager, initializeWorkspaceView, initializeWorkspace, 
 
 import { WindowOverlayFactory } from './window/windowOverlayFactory.js'
 
-import { initialize } from './settings.js'
 import { create } from './window/windowSelector.js'
 
 export var Main = class Main {
-  constructor () {
+  constructor (settings) {
     const keySymbols = { ...LOWER_CASE_KEY_SYMBOLS, ...UPPER_CASE_KEY_SYMBOLS }
-    const settings = initialize()
 
     const tagGenerator = new TagGenerator(keySymbols, NATURAL_ORDERING)
     const windowSelector = create(keySymbols, tagGenerator, new Logger('WindowSelector', settings))

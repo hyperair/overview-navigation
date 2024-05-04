@@ -1,42 +1,35 @@
+import Gio from 'gi://Gio'
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
 import { Main } from './app.js'
+import { Settings } from './settings.js'
 import { Logger } from './utils.js'
 
 let main, logger
-/*eslint-disable */
 
-export default class OverviewNavigationExtension {
-    constructor() {
+export default class OverviewNavigationExtension extends Extension {
+    constructor(metadata) {
+        super(metadata)
+
+        this.settings = new Settings(
+            this.getSettings(),
+            Gio.SettingsBindFlags.DEFAULT
+        )
+
         /* eslint-enable */
-        try {
-            logger = new Logger('Extension')
-            main = new Main()
-            logger.info('Initialized')
-        } catch (err) {
-            logger.error(err)
-        }
+        logger = new Logger('Extension', this.settings)
+        main = new Main(this.settings)
+        logger.info('Initialized')
     }
 
-    /*eslint-disable */
     enable() {
-        /* eslint-enable */
-        try {
-            logger.info('Enabling extension ...')
-            main.start()
-            logger.info('Enabled')
-        } catch (err) {
-            logger.error(err)
-        }
+        logger.info('Enabling extension ...')
+        main.start()
+        logger.info('Enabled')
     }
 
-    /*eslint-disable */
     disable() {
-        /* eslint-enable */
-        try {
-            logger.info('Disabling extension ...')
-            main.stop()
-            logger.info('Disabled')
-        } catch (err) {
-            logger.error(err)
-        }
+        logger.info('Disabling extension ...')
+        main.stop()
+        logger.info('Disabled')
     }
-};
+}
