@@ -45,17 +45,3 @@ export var PrefLogger = class PrefLogger extends Logger {
     this._out = log
   }
 }
-
-export var TestLogger = undefined;
-
-if (global.overviewNavigationTesting) {
-  TestLogger = class TestLogger extends Logger {
-    constructor (name, logging) {
-      super(name, {
-        isLogging: () => logging
-      })
-      this._out = console.log
-      this._outError = console.log
-    }
-  }
-}

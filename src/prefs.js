@@ -1,107 +1,18 @@
-import { Box, Orientation, Notebook, Label, Align } from 'gi://Gtk'
+import Adw from 'gi://Adw';
+import Gtk from 'gi://Gtk';
+import Gio from 'gi://Gio';
 import { Widget, ToggleButtonWidget, ColorChooserWidget, NumberInputWidget } from './preferences/widget.js'
-import { NotebookPage } from './preferences/notebook.js'
-
-global = {}
-
-class SettingsUI extends Widget {
-  constructor (logger, settings, properties) {
-    super(new Box({}))
-    this.parent.set_orientation(Orientation.VERTICAL)
-    this.notebook = new Notebook()
-    this.notebook.set_show_border(true)
-    this.parent.append(this.notebook, true, true, 0)
-
-    this.logger = logger
-    this.settings = settings
-    this.properties = properties
-  }
-
-  initialize () {
-    this.initializeBehaviorPage()
-    this.initializeStylePage()
-    this.initializeHelpPage()
-  }
-
-  initializeStylePage () {
-    const style = new NotebookPage('Style')
-
-    const backgroundColorText = new ColorChooserWidget(
-      'Hint background color',
-      this.settings,
-      this.properties.HINT_BACKGROUND_COLOR,
-      this.logger
-    )
-    const fontColorText = new ColorChooserWidget(
-      'Hint focusing font color',
-      this.settings,
-      this.properties.HINT_FONT_COLOR,
-      this.logger
-    )
-    const closingFontColorText = new ColorChooserWidget(
-      'Hint closing font color',
-      this.settings,
-      this.properties.HINT_CLOSING_FONT_COLOR,
-      this.logger
-    )
-    const borderColor = new ColorChooserWidget(
-      'Hint border color',
-      this.settings,
-      this.properties.HINT_BORDER_COLOR,
-      this.logger
-    )
-    const borderSize = new NumberInputWidget(
-      'Hint border size (px)',
-      this.settings,
-      this.properties.HINT_BORDER_SIZE,
-      this.logger
-    )
-
-    style.append(backgroundColorText)
-    style.append(fontColorText)
-    style.append(closingFontColorText)
-    style.append(borderColor)
-    style.append(borderSize)
-    style.register(this.notebook)
-  }
-
-  initializeHelpPage () {
-    const helpPage = new NotebookPage('Help')
-    helpPage.append(new HelpWidget())
-    helpPage.register(this.notebook)
-  }
-
-  initializeBehaviorPage () {
-    const overviewToggleButton = new ToggleButtonWidget('Show Overview When Change Workspace', this.settings)
-    overviewToggleButton.bind(this.properties.SHOW_OVERVIEW_WHEN_CHANGE_WORKSPACE_KEY)
-
-    const showWindowSelectorToggleButton = new ToggleButtonWidget(
-      'Show Window Selector when show Overview',
-      this.settings
-    )
-    showWindowSelectorToggleButton.bind(this.properties.SHOW_WINDOW_SELECTOR_WHEN_SHOW_OVERVIEW)
-
-    const loggingToggleButton = new ToggleButtonWidget('Logging', this.settings)
-    loggingToggleButton.bind(this.properties.LOGGING)
-
-    const behaviorPage = new NotebookPage('Behavior')
-    behaviorPage.append(overviewToggleButton)
-    behaviorPage.append(showWindowSelectorToggleButton)
-    behaviorPage.append(loggingToggleButton)
-    behaviorPage.register(this.notebook)
-  }
-}
 
 class HelpWidget extends Widget {
   constructor (name, settings) {
     super(
-      new Box({
+      new Gtk.Box({
         spacing: 10
       })
     )
     this.parent.set_margin_start(10)
     this.parent.set_margin_end(10)
-    this.parent.set_orientation(Orientation.VERTICAL)
+    this.parent.set_orientation(Gtk.Orientation.VERTICAL)
     this.name = 'Help'
 
     const activationTitle = this.createTitle(`Activation`)
@@ -130,17 +41,17 @@ class HelpWidget extends Widget {
     this.parent.append(closeDescription)
   }
   createTitle (text) {
-    const label = new Label({
-      halign: Align.START
+    const label = new Gtk.Label({
+      halign: Gtk.Align.START
     })
     label.set_markup(`<b>${text}</b>`)
     return label
   }
 
   createTextDescription (text) {
-    const label = new Label({
+    const label = new Gtk.Label({
       label: text,
-      halign: Align.START
+      halign: Gtk.Align.START
     })
     label.set_wrap(true)
     return label
@@ -149,21 +60,123 @@ class HelpWidget extends Widget {
 
 /*eslint-disable */
 // Required by Gnome Shell
-function init() {
-  /* eslint-enable */
-}
-
-/*eslint-disable */
-// Required by Gnome Shell
-import { initialize, PROPERTIES } from './settings.js'
+import { PROPERTIES } from './settings.js'
 import { PrefLogger } from './utils.js'
 
-function buildPrefsWidget() {
-  const settings = initialize()
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import {Settings} from './settings.js';
 
-  const logger = new PrefLogger('SettingsWidget', settings)
-  const ui = new SettingsUI(logger, settings, PROPERTIES)
+export default class OverviewNavigationPreferences extends ExtensionPreferences {
+    constructor(...args) {
+        super(...args);
+        this.settings = new Settings(
+            this.getSettings(),
+            Gio.SettingsBindFlags.DEFAULT
+        );
+        this.logger = new PrefLogger('SettingsWidget', this.settings);
+        this.properties = PROPERTIES;
+    }
 
-  ui.initialize()
-  return ui.parent
-}
+    fillPreferencesWindow(window) {
+        const page = new Adw.PreferencesPage();
+        const group = new Adw.PreferencesGroup({
+            title: _('Overview Navigation settings'),
+        })
+
+        window.add(this.createBehaviorPage())
+        window.add(this.createStylePage())
+        window.add(this.createHelpPage())
+        // group.add(ui.parent)
+        // page.add(group)
+        // window.add(page)
+    }
+
+    createBehaviorPage() {
+        const page = new Adw.PreferencesPage({ title: _('Behavior') })
+        const group = new Adw.PreferencesGroup()
+        page.add(group)
+
+        const overviewToggleButton = new ToggleButtonWidget(
+            'Show Overview When Change Workspace',
+            this.settings
+        )
+        overviewToggleButton.bind(
+            this.properties.SHOW_OVERVIEW_WHEN_CHANGE_WORKSPACE_KEY
+        )
+
+        const showWindowSelectorToggleButton = new ToggleButtonWidget(
+            'Show Window Selector when show Overview',
+            this.settings
+        )
+        showWindowSelectorToggleButton.bind(
+            this.properties.SHOW_WINDOW_SELECTOR_WHEN_SHOW_OVERVIEW
+        )
+
+        const loggingToggleButton = new ToggleButtonWidget(
+            'Logging', this.settings
+        )
+        loggingToggleButton.bind(this.properties.LOGGING)
+
+        group.add(overviewToggleButton.parent)
+        group.add(showWindowSelectorToggleButton.parent)
+        group.add(loggingToggleButton.parent)
+
+        return page
+    }
+
+    createStylePage() {
+        const backgroundColorText = new ColorChooserWidget(
+            'Hint background color',
+            this.settings,
+            this.properties.HINT_BACKGROUND_COLOR,
+            this.logger
+        )
+        const fontColorText = new ColorChooserWidget(
+            'Hint focusing font color',
+            this.settings,
+            this.properties.HINT_FONT_COLOR,
+            this.logger
+        )
+        const closingFontColorText = new ColorChooserWidget(
+            'Hint closing font color',
+            this.settings,
+            this.properties.HINT_CLOSING_FONT_COLOR,
+            this.logger
+        )
+        const borderColor = new ColorChooserWidget(
+            'Hint border color',
+            this.settings,
+            this.properties.HINT_BORDER_COLOR,
+            this.logger
+        )
+        const borderSize = new NumberInputWidget(
+            'Hint border size (px)',
+            this.settings,
+            this.properties.HINT_BORDER_SIZE,
+            this.logger
+        )
+
+        const page = new Adw.PreferencesPage({ title: _('Style') })
+        const group = new Adw.PreferencesGroup()
+        page.add(group)
+
+        group.add(backgroundColorText.parent)
+        group.add(fontColorText.parent)
+        group.add(closingFontColorText.parent)
+        group.add(borderColor.parent)
+        group.add(borderSize.parent)
+
+        return page
+
+    }
+
+    createHelpPage() {
+        const page = new Adw.PreferencesPage({ title: _('Help') })
+        const group = new Adw.PreferencesGroup()
+        page.add(group)
+
+        group.add(new HelpWidget().parent)
+
+        return page
+    }
+};
